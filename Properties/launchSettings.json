@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DirectoryCleaner": {
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\Workbench\\cleaner\\settings.json\""
+    }
+  }
+}
