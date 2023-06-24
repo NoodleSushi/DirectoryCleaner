@@ -26,6 +26,7 @@ FLAGS:
 -f      --forced
 -r      --recursive
 -df     --delete-folder
+-du     --delete-unzipped
 ";
 
 if (args.Length == 0 || args[0] == "-h" || args[0] == "--help")
@@ -173,6 +174,8 @@ static FileInfo? GetFileInfo(string filePath)
 
 static string TraverseDirectorySetting(DirectorySettingRule rule, bool delete = false)
 {
+    HashSet<string> ARCHIVE_EXTENSIONS = new() { ".zip", ".rar", ".7z" };
+
     if (GetDirectoryInfo(rule.Setting.Directory) is not DirectoryInfo root)
         return "";
 
@@ -214,6 +217,17 @@ static string TraverseDirectorySetting(DirectorySettingRule rule, bool delete = 
             foreach (var dir in dirLevel.baseDir.EnumerateDirectories())
             {
                 dirLevel.dirQueue.Enqueue(dir);
+
+                if ((dirLevels.Count == 0 || rule.Flags.HasFlag(DirectoryFlags.Recursive)) && rule.Flags.HasFlag(DirectoryFlags.DeleteUnzipped))
+                {
+                    FileInfo? archive = dirLevel.baseDir.EnumerateFiles($"{dir.Name}*", SearchOption.TopDirectoryOnly)
+                        .Where(x => ARCHIVE_EXTENSIONS.Contains(x.Extension))
+                        .FirstOrDefault();
+                    if (archive is not null)
+                    {
+                        affectPath(archive);
+                    }
+                }
             }
             dirLevels.Push(dirLevel);
         }

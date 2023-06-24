@@ -10,6 +10,8 @@ namespace DirectoryCleaner
             {"--recursive", DirectoryFlags.Recursive},
             {"-df", DirectoryFlags.DeleteFolder},
             {"--delete-folder", DirectoryFlags.DeleteFolder},
+            {"-du", DirectoryFlags.DeleteUnzipped},
+            {"--delete-unzipped", DirectoryFlags.DeleteUnzipped},
         };
 
         public static DirectoryFlags Parse(string[] typedFlags)

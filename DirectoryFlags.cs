@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +13,6 @@ namespace DirectoryCleaner
         Forced = 1,
         Recursive = 2,
         DeleteFolder = 4,
+        DeleteUnzipped = 8,
     }
 }
