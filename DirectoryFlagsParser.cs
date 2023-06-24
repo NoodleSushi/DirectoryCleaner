@@ -1,4 +1,4 @@
-namespace DirectoryCleaner
+﻿namespace DirectoryCleaner
 {
     public static class DirectoryFlagsParser
     {
@@ -12,6 +12,8 @@ namespace DirectoryCleaner
             {"--delete-folder", DirectoryFlags.DeleteFolder},
             {"-du", DirectoryFlags.DeleteUnzipped},
             {"--delete-unzipped", DirectoryFlags.DeleteUnzipped},
+            {"-de", DirectoryFlags.DeleteEmpty},
+            {"--delete-empty", DirectoryFlags.DeleteEmpty},
         };
 
         public static DirectoryFlags Parse(string[] typedFlags)

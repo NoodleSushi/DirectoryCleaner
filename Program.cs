@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DirectoryCleaner;
@@ -27,6 +27,7 @@ FLAGS:
 -r      --recursive
 -df     --delete-folder
 -du     --delete-unzipped
+-de     --delete-empty
 ";
 
 if (args.Length == 0 || args[0] == "-h" || args[0] == "--help")
@@ -247,7 +248,8 @@ static string TraverseDirectorySetting(DirectorySettingRule rule, bool delete = 
             {
                 bool isRoot = dirLevel.baseDir == root;
                 bool isRootDeletable = rule.Flags.HasFlag(DirectoryFlags.DeleteFolder);
-                if ((!isRoot || isRootDeletable) && (dirLevel.delete || evalPath(dirLevel.baseDir)))
+                bool shallEmptyDelete = rule.Flags.HasFlag(DirectoryFlags.DeleteEmpty) && !dirLevel.baseDir.EnumerateFileSystemInfos().Any();
+                if ((!isRoot || isRootDeletable) && (dirLevel.delete || evalPath(dirLevel.baseDir) || shallEmptyDelete))
                     affectPath(dirLevel.baseDir);
             }
         }
