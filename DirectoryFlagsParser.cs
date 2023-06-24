@@ -1,4 +1,4 @@
-﻿namespace DirectoryCleaner
+namespace DirectoryCleaner
 {
     public static class DirectoryFlagsParser
     {
@@ -6,7 +6,7 @@
         {
             {"-f", DirectoryFlags.Forced},
             {"--forced", DirectoryFlags.Forced},
-            {"-rec", DirectoryFlags.Recursive},
+            {"-r", DirectoryFlags.Recursive},
             {"--recursive", DirectoryFlags.Recursive},
             {"-df", DirectoryFlags.DeleteFolder},
             {"--delete-folder", DirectoryFlags.DeleteFolder},

@@ -24,7 +24,7 @@ CONFIG JSON FORMAT:
 
 FLAGS:
 -f      --forced
--rec    --recursive
+-r      --recursive
 -df     --delete-folder
 ";
 
