@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DirectoryCleaner;
@@ -177,20 +177,20 @@ static string TraverseDirectorySetting(DirectorySettingRule rule, bool delete = 
         return "";
 
     string logs = "";
-    Action<FileSystemInfo> readPath;
+    Action<FileSystemInfo> affectPath;
 
     if (delete)
-        readPath = (path) => {
+        affectPath = (path) => {
             path.Delete();
             logs += $"Deleted: \"{path.FullName}\"\n";
         };
     else
-        readPath = (path) =>
+        affectPath = (path) =>
             logs += $"{path.FullName}\n";
 
     bool hasRegEx = !string.IsNullOrEmpty(rule.Setting.RegExPattern);
 
-    Func<FileSystemInfo, bool> eval = 
+    Func<FileSystemInfo, bool> evalPath = 
         x => !hasRegEx || Regex.IsMatch(x.FullName, rule.Setting.RegExPattern ?? "");
 
     Stack<(DirectoryInfo baseDir, bool delete, Queue<DirectoryInfo>? dirQueue)> dirLevels = new();
@@ -202,11 +202,11 @@ static string TraverseDirectorySetting(DirectorySettingRule rule, bool delete = 
         var dirLevel = dirLevels.Pop();
         if (dirLevel.dirQueue == null)
         {
-            var files = dirLevel.baseDir.EnumerateFiles().Where(x => dirLevel.delete || eval(x));
-
+            var files = dirLevel.baseDir.EnumerateFiles().Where(x => dirLevel.delete || evalPath(x));
+            
             foreach (var file in files)
             {
-                readPath(file);
+                affectPath(file);
             }
 
             dirLevel.dirQueue = new();
@@ -224,17 +224,17 @@ static string TraverseDirectorySetting(DirectorySettingRule rule, bool delete = 
                 var dirElem = dirLevel.dirQueue.Dequeue();
                 dirLevels.Push(dirLevel);
 
-                bool shallDelete = eval(dirElem);
-                bool recursive = rule.Flags.HasFlag(DirectoryFlags.Recursive);
-                if (shallDelete || recursive)
+                bool shallDelete = evalPath(dirElem);
+                bool isRecursive = rule.Flags.HasFlag(DirectoryFlags.Recursive);
+                if (shallDelete || isRecursive)
                     dirLevels.Push(new(dirElem, shallDelete, null));
             }
             else
             {
                 bool isRoot = dirLevel.baseDir == root;
-                bool rootDeletable = rule.Flags.HasFlag(DirectoryFlags.DeleteFolder);
-                if ((!isRoot || rootDeletable) && (dirLevel.delete || eval(dirLevel.baseDir)))
-                    readPath(dirLevel.baseDir);
+                bool isRootDeletable = rule.Flags.HasFlag(DirectoryFlags.DeleteFolder);
+                if ((!isRoot || isRootDeletable) && (dirLevel.delete || evalPath(dirLevel.baseDir)))
+                    affectPath(dirLevel.baseDir);
             }
         }
     }
